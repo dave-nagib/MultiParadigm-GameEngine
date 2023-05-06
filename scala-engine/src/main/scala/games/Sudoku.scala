@@ -60,10 +60,12 @@ def sudokuController(gameState: GameState, move: String) : (GameState, Boolean) 
 
   val NW_corner_currentSquare: Array[Int] = pos.map(p => (p / 3) * 3)
 
-  for (row <- NW_corner_currentSquare(0) until NW_corner_currentSquare(0) + 3)
-    for (col <- NW_corner_currentSquare(1) until NW_corner_currentSquare(1) + 3)
-      if (gameState._1(row)(col) == value)
+  gameState._1.slice(NW_corner_currentSquare(0), NW_corner_currentSquare(0) + 3)
+    .map(row => row.slice(NW_corner_currentSquare(1), NW_corner_currentSquare(1) + 3))
+    .foreach(row => {
+      if(row.contains(value))
         return (gameState, false)
+    })
 
   gameState._1(pos(0)).foreach(
     square =>

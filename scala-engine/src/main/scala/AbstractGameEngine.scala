@@ -3,7 +3,6 @@ import games._
 
 import scala.util.matching.Regex
 
-
 type GameState = (Array[Array[String]], Int)
 
 val sudokuGameState = (Array(Array(" ", " ", " ", "7", "9", " ", "5", " ", " "),
@@ -43,8 +42,8 @@ def GameEngine(startingState: GameState, drawer: GameState => Unit, controller: 
   }
 }
 
-
-def main(args: Array[String]): Unit = {
+@main def main(): Unit = {
   GameEngine(sudokuGameState, sudokuDrawer, sudokuController)
 }
+
 
