@@ -80,9 +80,6 @@ def sudokuController(gameState: GameState, move: String) : (GameState, Boolean) 
     ((newState, gameState._2), true)
   }
 
-  def copyState(gameState: Array[Array[String]]) : Array[Array[String]] = gameState.map(row => row.map(identity))
-
-
   val pos =  (move match
     case position(first) => first
     case _ => return (gameState, false)

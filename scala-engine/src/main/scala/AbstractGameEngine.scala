@@ -1,42 +1,9 @@
 package org.gengine
 import games._
-
 import scala.util.matching.Regex
 
 type GameState = (Array[Array[String]], Int)
 
-<<<<<<< Updated upstream
-=======
-val sudokuGameState = (Array(
-  Array(" ", " ", " ", "7", "9", " ", "5", " ", " "),
-  Array("3", "5", "2", " ", " ", "8", " ", "4", " "),
-  Array(" ", " ", " ", " ", " ", " ", " ", "8", " "),
-  Array(" ", "1", " ", " ", "7", " ", " ", " ", "4"),
-  Array("6", " ", " ", "3", " ", "1", " ", " ", "8"),
-  Array("9", " ", " ", " ", "8", " ", " ", "1", " "),
-  Array(" ", "2", " ", " ", " ", " ", " ", " ", " "),
-  Array(" ", "4", " ", "5", " ", " ", "8", "9", "1"),
-  Array(" ", "8", " ", " ", "3", "7", " ", " ", " ")
-), 0)
-
-val tictactoeGameState = (Array(
-  Array(" ", " ", " "),
-  Array(" ", " ", " "),
-  Array(" ", " ", " ")
-), 1)
-
-val chessGameState = (
-  Array(Array("BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR"),
-  Array.fill(8)("BP"),
-  Array("WS", "WP", "WS", "BS", "WS", "BS", "WS", "BS"),
-  Array("BS", "WS", "BS", "WS", "BS", "WS", "BS", "WS"),
-  Array("WS", "BS", "WS", "BS", "WS", "BS", "WS", "BS"),
-  Array("BS", "WS", "BS", "WS", "BS", "WS", "BS", "WS"),
-  Array.fill(8)("WP"),
-  Array("WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR"))
-  , 1)
-
->>>>>>> Stashed changes
 def GameEngine(startingState: GameState, drawer: GameState => Unit, controller: (GameState, String) => (GameState, Boolean)): Unit = {  drawer(startingState)
   var newState: GameState = startingState
   var validMove: Boolean = true
@@ -55,13 +22,6 @@ def GameEngine(startingState: GameState, drawer: GameState => Unit, controller: 
   }
 }
 
-
 @main def main(): Unit = {
-<<<<<<< Updated upstream
+  GameEngine(chessStartGenerator(), sudokuDrawer, tictactoeController)
 }
-
-
-=======
-  GameEngine(chessGameState, sudokuDrawer, tictactoeController)
-}
->>>>>>> Stashed changes

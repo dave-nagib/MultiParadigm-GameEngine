@@ -1,8 +1,6 @@
 package org.gengine
 package games
 
-def copyState(gameState: Array[Array[String]]) : Array[Array[String]] = gameState.map(row => row.map(identity))
-
 def tictactoeDrawer(gameState: GameState): Unit = {
   println(Console.RED + s"Player ${gameState._2 match
     case 1 => 'X'

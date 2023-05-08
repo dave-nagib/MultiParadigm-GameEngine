@@ -12,7 +12,7 @@ def getCol(letter: String) : Int = {
   letter.toInt - 65
 }
 
-def copyState(gameState: GameState) : GameState = (gameState._1.map(row => row.map(identity)),gameState._2)
+def copyState(gameState: Array[Array[String]]) : Array[Array[String]] = gameState.map(row => row.map(identity))
 
 // -------------------------------------------- STARTING STATES --------------------------------------------
 
@@ -40,8 +40,20 @@ def checkersStartGenerator() : GameState = {
     1)
 }
 
+def ticTacToeStartGenerator() : GameState = {
+  (Array(
+    Array(" ", " ", " "),
+    Array(" ", " ", " "),
+    Array(" ", " ", " ")
+  ), 1)
+}
+
 def connect4StartGenerator() : GameState = {
   (Array.fill(6)(Array.fill(7)("0")), 1)
+}
+
+def eightQueensStartGenerator() : GameState = {
+  (Array.fill(8)(Array.fill(8)("0")), 1)
 }
 
 def sudokuStartGenerator(emptySquares: Int): GameState = {
@@ -58,7 +70,7 @@ def sudokuStartGenerator(emptySquares: Int): GameState = {
     r(x) += v
     c(y) += v
     z(x / 3)(y / 3) += v
-  }
+}
 
   def fill(x: Int, y: Int): Boolean = {
     if (board(x)(y) == 0) {

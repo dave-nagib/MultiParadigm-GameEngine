@@ -120,8 +120,8 @@ def checkersController(currState: GameState, input: String) : (GameState, Boolea
       if (isWhite(ri,ci) || !ownership) return (currState,false)
       // Because recursion alters the mutable board, we deep copy the
       // current state into a temporary state and use it instead.
-      val tempState = copyState(currState)
-      val (newState,valid) = jumpsController(tempState, rows, cols, pawn)
+      val tempBoard = copyState(currBoard)
+      val (newState,valid) = jumpsController((tempBoard, currPlayer), rows, cols, pawn)
       if (valid)
         (newState,true) // If the moves were valid, return the new state.
       else
