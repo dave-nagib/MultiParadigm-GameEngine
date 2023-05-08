@@ -27,6 +27,23 @@ def chessStartGenerator() : GameState = {
     Array("WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR")), 1)
 }
 
+def checkersStartGenerator() : GameState = {
+  (Array(
+    Array("0","2","0","2","0","2","0","2"),
+    Array("2","0","2","0","2","0","2","0"),
+    Array("0","2","0","2","0","2","0","2"),
+    Array("0","0","0","0","0","0","0","0"),
+    Array("0","0","0","0","0","0","0","0"),
+    Array("1","0","1","0","1","0","1","0"),
+    Array("0","1","0","1","0","1","0","1"),
+    Array("1","0","1","0","1","0","1","0")),
+    1)
+}
+
+def connect4StartGenerator() : GameState = {
+  (Array.fill(6)(Array.fill(7)("0")), 1)
+}
+
 def sudokuStartGenerator(emptySquares: Int): GameState = {
   val board: Array[Array[Int]] = Array.fill(9, 9)(0)
   val r: Array[mutable.Set[Int]] = Array.fill(9)(mutable.Set[Int]())
