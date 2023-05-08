@@ -12,7 +12,7 @@ def generalChecks(black: Boolean, gameState: GameState, move: ((Int, Int),(Int, 
   val toPiece_isBlack: Boolean = piece_isBlack(toPiece)
   if(black ^ (gameState._2 % 2 == 0)) {
     return false
-  } else if (toPiece == "WS" || toPiece == "BS")
+  } else if (toPiece == " ")
     return true
   else if (!toPiece_isBlack ^ black)
     return false
@@ -22,19 +22,19 @@ def generalChecks(black: Boolean, gameState: GameState, move: ((Int, Int),(Int, 
 def pawn(black: Boolean)(gameState: GameState, move: ((Int, Int),(Int, Int))): Boolean = {
   val (from, to) = move
   (math.abs(to._1 - from._1) + math.abs(to._2 - from._2) <= 2 && math.abs(to._1 - from._1) > 0) && (!black ^ to._1 > from._1) && (math.abs(to._1 - from._1) != 2 || ((from._1 == 1  && black) || (from._1 == 6 && !black))) && (to._2 == from._2 ^ ((gameState._1(to._1)(to._2) match {
-    case "WS" | "BS" => false
+    case " " => false
     case _ => true
   }) && (black ^ piece_isBlack(gameState._1(to._1)(to._2)))))
 }
 
-def knight(black: Boolean)(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
+def knight(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   val (from, to) = move
   if (math.abs(to._1 - from._1) + math.abs(to._2 - from._2) != 3 || math.abs(to._1 - from._1) == 0)
     return false
   true
 }
 
-def bishop(black: Boolean)(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
+def bishop(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   val (from, to) = move
   if (math.abs(to._1 - from._1) != math.abs(to._2 - from._2))
     return false
@@ -58,7 +58,7 @@ def bishop(black: Boolean)(gameState: GameState, move: ((Int, Int), (Int, Int)))
   true
 }
 
-def rook(black: Boolean)(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
+def rook(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   val (from, to) = move
   if (math.abs(to._1 - from._1) != 0 && math.abs(to._2 - from._2) != 0)
     return false
@@ -86,12 +86,12 @@ def rook(black: Boolean)(gameState: GameState, move: ((Int, Int), (Int, Int))): 
   true
 }
 
-def blank(black: Boolean = false)(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
+def blank(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   false
 }
 
-def queen(black: Boolean)(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
-  rook(black)(gameState, move) || bishop(black)(gameState, move)
+def queen(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
+  rook(gameState, move) || bishop(gameState, move)
 }
 
 def king(black: Boolean)(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
@@ -127,18 +127,18 @@ def chessController(gameState: GameState, move: String): (GameState, Boolean) = 
   })
   val piece: (GameState, ((Int, Int), (Int, Int))) => Boolean = gameState._1(from._1)(from._2) match {
     case "WP" => pawn(black = false)
-    case "WN" => knight(black = false)
-    case "WB" => bishop(black = false)
+    case "WN" => knight
+    case "WB" => bishop
     case "WK" => king(black = false)
-    case "WQ" => queen(black = false)
-    case "WR" => rook(black = false)
+    case "WQ" => queen
+    case "WR" => rook
     case "BP" => pawn(black = true)
-    case "BN" => knight(black = true)
-    case "BB" => bishop(black = true)
+    case "BN" => knight
+    case "BB" => bishop
     case "BK" => king(black = true)
-    case "BQ" => queen(black = true)
-    case "BR" => rook(black = true)
-    case _ => blank()
+    case "BQ" => queen
+    case "BR" => rook
+    case _ => blank
   }
   if(!piece(gameState, (from, to)))
     return (gameState, false)
@@ -147,39 +147,39 @@ def chessController(gameState: GameState, move: String): (GameState, Boolean) = 
   val newState: Array[Array[String]] = gameState._1.map(row => row.map(identity))
   assert(newState.length == 8 && newState(0).length == 8)
   newState(to._1)(to._2) = gameState._1(from._1)(from._2)
-  newState(from._1)(from._2) = if((from._1 + from._2) % 2 == 0) "WS" else "BS"
+  newState(from._1)(from._2) = " "
   ((newState, 3 - gameState._2), true)
 }
 
-def pieces = Map(
-  "WR" -> " \u2656.",
-  "WN" -> " \u2658",
-  "WB" -> " \u2657",
-  "WQ" -> " \u2655",
-  "WK" -> " \u2654",
-  "WP" -> " \u2659",
-  "BR" -> " \u265C",
-  "BN" -> " \u265E",
-  "BB" -> " \u265D",
-  "BQ" -> " \u265B",
-  "BK" -> " \u265A",
-  "BP" -> "♟ ",
-  "BS" -> "   ",
-  "WS" -> "   "
-)
+def pieces(piece: String) = piece match{
+  case "WR" => " \u265C "
+  case "WN" => " \u265E "
+  case "WB" => " \u265D "
+  case "WQ" => " \u265B "
+  case "WK" => " \u265A "
+  case "WP" => " \u2659 "
+  case "BR" => s" ${Console.BLACK}\u265C "
+  case "BN" => s" ${Console.BLACK}\u265E "
+  case "BB" => s" ${Console.BLACK}\u265D "
+  case "BQ" => s" ${Console.BLACK}\u265B "
+  case "BK" => s" ${Console.BLACK}\u265A "
+  case "BP" => s" ${Console.BLACK}\u2659 "
+  case " " => s" ${Console.GREEN}\u265B "
+  case x: String => x
+}
 
 def chessDrawer(gameState: GameState): Unit = {
   println(Console.RED + "Player " + gameState._2 + "'s Turn:")
-  for(row <- 0 to 7) {
+  for(row <- gameState._1.indices) {
     print(Console.RED + (8 - row) + "\t" + Console.RESET)
-    for(col <- 0 to 7) {
-      print((if((row + col) % 2 == 0) "\u001b[47m" else "\u001b[40m") + pieces(gameState._1(row)(col)) + "\u001b[0m")
+    for(col <- gameState._1.indices) {
+      print((if((row + col) % 2 == 0) "\u001b[41;2m" else "\u001b[42m") + pieces(gameState._1(row)(col)) + "\u001b[0m")
     }
     println()
   }
-  print(" \t")
-  for(col <- 0 to 7) {
-    print(Console.RED + ('A' + col).toChar + "  ")
+  print(" \t ")
+  for(col <- gameState._1.indices) {
+    print(Console.RED + ('A' + col).toChar + "   ")
   }
   println(Console.RESET)
 }
