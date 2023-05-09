@@ -19,10 +19,10 @@ def copyState(gameState: Array[Array[String]]) : Array[Array[String]] = gameStat
 def chessStartGenerator() : GameState = {
   (Array(Array("BR", "BN", "BB", "BQ", "BK", "BB", "BN", "BR"),
     Array.fill(8)("BP"),
-    Array("WS", "WP", "WS", "BS", "WS", "BS", "WS", "BS"),
-    Array("BS", "WS", "BS", "WS", "BS", "WS", "BS", "WS"),
-    Array("WS", "BS", "WS", "BS", "WS", "BS", "WS", "BS"),
-    Array("BS", "WS", "BS", "WS", "BS", "WS", "BS", "WS"),
+    Array("  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "),
+    Array("  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "),
+    Array("  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "),
+    Array("  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "),
     Array.fill(8)("WP"),
     Array("WR", "WN", "WB", "WQ", "WK", "WB", "WN", "WR")), 1)
 }
