@@ -1,10 +1,13 @@
 package org.gengine
 package games
+import javax.print.attribute.standard.Destination
+import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 def piece_isBlack(piece: String): Boolean = {
   piece(0) == 'B'
 }
+
 
 def generalChecks(black: Boolean, gameState: GameState, move: ((Int, Int),(Int, Int))): Boolean = {
   val (from, to) = move
@@ -12,7 +15,7 @@ def generalChecks(black: Boolean, gameState: GameState, move: ((Int, Int),(Int, 
   val toPiece_isBlack: Boolean = piece_isBlack(toPiece)
   if(black ^ (gameState._2 % 2 == 0)) {
     return false
-  } else if (toPiece == " ")
+  } else if (toPiece == "  ")
     return true
   else if (!toPiece_isBlack ^ black)
     return false
@@ -22,7 +25,7 @@ def generalChecks(black: Boolean, gameState: GameState, move: ((Int, Int),(Int, 
 def pawn(black: Boolean)(gameState: GameState, move: ((Int, Int),(Int, Int))): Boolean = {
   val (from, to) = move
   (math.abs(to._1 - from._1) + math.abs(to._2 - from._2) <= 2 && math.abs(to._1 - from._1) > 0) && (!black ^ to._1 > from._1) && (math.abs(to._1 - from._1) != 2 || ((from._1 == 1  && black) || (from._1 == 6 && !black))) && (to._2 == from._2 ^ ((gameState._1(to._1)(to._2) match {
-    case " " => false
+    case "  " => false
     case _ => true
   }) && (black ^ piece_isBlack(gameState._1(to._1)(to._2)))))
 }
@@ -34,28 +37,34 @@ def knight(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   true
 }
 
+@tailrec
+def notFoundInPath(found: String => Boolean = x => x != "  ", notFound: String => Boolean = x => false)(gameState: GameState, destination: (Int, Int), currentPos: (Int, Int)): Boolean = {
+  if(currentPos == destination || !(0 to 7 contains currentPos._1) || !(0 to 7 contains currentPos._2) || notFound(gameState._1(currentPos._1)(currentPos._2)))
+    return true
+  if(found(gameState._1(currentPos._1)(currentPos._2)))
+    return false
+  notFoundInPath(found, notFound)(gameState, destination, (
+      (
+        (destination._1 - currentPos._1) match
+          case x: Int if x < 0 => -1
+          case 0 => 0
+          case y => 1
+      ) + currentPos._1, (
+      (destination._2 - currentPos._2) match
+        case x: Int if x < 0 => -1
+        case 0 => 0
+        case y => 1
+      ) + currentPos._2
+    )
+  )
+}
+
 def bishop(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   val (from, to) = move
   if (math.abs(to._1 - from._1) != math.abs(to._2 - from._2))
     return false
 
-  val rowCoef: Int =
-    if(from._1 > to._1)
-      -1
-    else
-      1
-
-  val colCoef: Int =
-    if (from._2 > to._2)
-      -1
-    else
-      1
-
-  for(i <- 1 until math.abs(to._1 - from._1))
-    if(gameState._1(from._1 + i * rowCoef)(from._2 + i * colCoef) != "WS" && gameState._1(from._1)(from._2) != "BS")
-      return false
-
-  true
+  notFoundInPath()(gameState, to, (from._1 + (if(from._1 > to._1) -1 else 1), from._2 + (if (from._2 > to._2) -1 else 1)))
 }
 
 def rook(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
@@ -63,27 +72,7 @@ def rook(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   if (math.abs(to._1 - from._1) != 0 && math.abs(to._2 - from._2) != 0)
     return false
 
-  val rowCoef: Int =
-    if (from._1 == to._1)
-      0
-    else if(from._1 > to._1)
-      -1
-    else
-      1
-
-  val colCoef: Int =
-    if (from._2 == to._2)
-      0
-    else if (from._2 > to._2)
-      -1
-    else
-      1
-
-  for (i <- 1 until math.abs(to._1 - from._1) + math.abs(to._2 - from._2))
-    if (gameState._1(from._1 + i * rowCoef)(from._2 + i * colCoef) != "WS" && gameState._1(from._1)(from._2) != "BS")
-      return false
-
-  true
+  notFoundInPath()(gameState, to, (from._1 + (if (from._1 == to._1) 0 else if(from._1 > to._1) -1 else 1), from._2 + (if (from._2 == to._2) 0 else if (from._2 > to._2) -1 else 1)))
 }
 
 def blank(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
@@ -96,11 +85,34 @@ def queen(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
 
 def king(black: Boolean)(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   val (from, to) = move
-  if (!(math.abs(to._1 - from._1) + math.abs(to._2 - from._2) == 2 && math.abs(to._1 - from._1) > 0))
+  if (math.abs(to._1 - from._1) != 1 && math.abs(to._2 - from._2) != 1)
     return false
-  true
-}
 
+  def horseCheck(row: Int, col: Int): Boolean = !((0 to 7 contains row) && (0 to 7 contains col) && gameState._1(row)(col)(1) == 'N' && (gameState._1(row)(col)(0) == 'B' ^ black))
+
+  val safe_diagonal = notFoundInPath(x => (x(1) == 'Q' || x(1) == 'B') && (x(0) == 'B' ^ black), x => (x != "  ") && (x(0) == 'B' ^ !black))
+  val safe_polar = notFoundInPath(x => (x(1) == 'Q' || x(1) == 'R') && (x(0) == 'B' ^ black), x => (x != "  ") && (x(0) == 'B' ^ !black))
+
+  !(!horseCheck(to._1 + 1, to._2 + 2) ||
+    !horseCheck(to._1 + 1, to._2 - 2) ||
+    !horseCheck(to._1 - 1, to._2 + 2) ||
+    !horseCheck(to._1 - 1, to._2 - 2) ||
+    !horseCheck(to._1 + 2, to._2 + 1) ||
+    !horseCheck(to._1 + 2, to._2 - 1) ||
+    !horseCheck(to._1 - 2, to._2 + 1) ||
+    !horseCheck(to._1 - 2, to._2 - 1) ||
+
+    !safe_diagonal(gameState, (to._1 + Math.min(8 - to._1, 8 - to._2), to._2 + Math.min(8 - to._1, 8 - to._2)), to) ||
+    !safe_diagonal(gameState, (to._1 + Math.min(8 - to._1, to._2 + 1), to._2 - Math.min(8 - to._1, to._2 + 1)), to) ||
+    !safe_diagonal(gameState, (to._1 - Math.min(to._1 + 1, 8 - to._2), to._2 + Math.min(to._1 + 1, 8 - to._2)), to) ||
+    !safe_diagonal(gameState, (to._1 - Math.min(to._1 + 1, to._2 + 1), to._2 - Math.min(to._1 + 1, to._2 + 1)), to) ||
+
+    !safe_polar(gameState, (to._1, 8), to) ||
+    !safe_polar(gameState, (to._1, -1), to) ||
+    !safe_polar(gameState, (8, to._2), to) ||
+    !safe_polar(gameState, (-1, to._2), to)
+  )
+}
 
 def translate_input(move: Array[String]): ((Int, Int), (Int, Int)) = {
   val translated_input: Array[IndexedSeq[Int]] = new Array[IndexedSeq[Int]](2)
@@ -140,14 +152,14 @@ def chessController(gameState: GameState, move: String): (GameState, Boolean) = 
     case "BR" => rook
     case _ => blank
   }
-  if(!piece(gameState, (from, to)))
+
+  if(!piece(gameState, (from, to)) || !generalChecks(piece_isBlack(gameState._1(from._1)(from._2)), gameState, (from, to)))
     return (gameState, false)
-  if (!generalChecks(piece_isBlack(gameState._1(from._1)(from._2)), gameState, (from, to)))
-    return (gameState, false)
+
   val newState: Array[Array[String]] = gameState._1.map(row => row.map(identity))
   assert(newState.length == 8 && newState(0).length == 8)
   newState(to._1)(to._2) = gameState._1(from._1)(from._2)
-  newState(from._1)(from._2) = " "
+  newState(from._1)(from._2) = "  "
   ((newState, 3 - gameState._2), true)
 }
 
@@ -164,7 +176,7 @@ def pieces(piece: String) = piece match{
   case "BQ" => s" ${Console.BLACK}\u265B "
   case "BK" => s" ${Console.BLACK}\u265A "
   case "BP" => s" ${Console.BLACK}\u2659 "
-  case " " => s" ${Console.GREEN}\u265B "
+  case "  " => s" ${Console.GREEN}\u265B "
   case x: String => x
 }
 

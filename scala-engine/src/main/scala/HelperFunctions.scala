@@ -115,7 +115,9 @@ def sudokuStartGenerator(emptySquares: Int): GameState = {
 
   (board.map(
     row => row.map(
-      value => value.toString
+      value => value match
+        case 0 => " "
+        case x: Int => x.toString
     )
   ) , 1)
 
