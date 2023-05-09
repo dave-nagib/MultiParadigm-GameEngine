@@ -1,20 +1,25 @@
 package org.gengine
 package games
+import java.util.Currency
 import scala.annotation.tailrec
 import scala.util.matching.Regex
+
+/* ------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------ */
 
 @tailrec
 def findEmptySlot(board: Array[Array[String]], column: Int, currRow: Int) : Int = {
   // If the next slot down is not empty or the ground, return current row.
-  if (board(currRow+1)(column) != "0" || currRow == 5)
+  if (currRow == 5 || board(currRow+1)(column) != "0")
     currRow
   else
     findEmptySlot(board, column, currRow+1) // If it is empty, recursively call on the next row.
 }
 
+/* --------------------------------------------------- CONTROLLER --------------------------------------------------- */
+
 def connect4Controller(currState: GameState, input: String) : (GameState, Boolean) = {
   val move = input.replaceAll(" ", "")
-  val singleDigit: Regex = "^([A-G])$".r
+  val singleDigit: Regex = "^([a-gA-G])$".r
   var column: Int = 0
   move match {
     case singleDigit(col) => column = getCol(col)
@@ -28,7 +33,7 @@ def connect4Controller(currState: GameState, input: String) : (GameState, Boolea
   ((currBoard,3-currPlayer), true)
 }
 
-// ----------------------------------------- DRAWER -----------------------------------------
+/* ----------------------------------------------------- DRAWER ----------------------------------------------------- */
 
 def drawConnect4Piece(piece: String) = piece match{
   case "0" => s"\u2002${Console.WHITE}\u2B24\u2002"
@@ -38,7 +43,8 @@ def drawConnect4Piece(piece: String) = piece match{
 }
 
 def connect4Drawer(currState: GameState) : Unit = {
-  println(Console.RED + "Player " + currState._2 + "'s Turn:")
+  println(Console.RED + "\n\nPlayer " + currState._2 + "'s Turn " +
+    (if (currState._2 == 1) "(Red)" else "(Yellow)") + ":\n")
   for (row <- currState._1.indices) {
     for (col <- currState._1.indices) {
       print("\u001b[48;5;18m" + drawConnect4Piece(currState._1(row)(col)) + "\u001b[0m")

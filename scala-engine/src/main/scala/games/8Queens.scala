@@ -2,6 +2,8 @@ package org.gengine
 package games
 import scala.util.matching.Regex
 
+/* ------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------ */
+
 def directedCheck(board: Array[Array[String]], currRow: Int, currCol: Int, rowOffset: Int, colOffset: Int) : Boolean = {
   try {
     // Return the current cell is empty AND the next checks are all true
@@ -20,10 +22,12 @@ def queenClearCheck(board: Array[Array[String]], row: Int, col: Int) : Boolean =
     directedCheck(board, row+1, col, 1, 0) && directedCheck(board, row+1, col+1, 1, 1)
 }
 
+/* --------------------------------------------------- CONTROLLER --------------------------------------------------- */
+
 def eightQueensController(currState: GameState, input: String) : (GameState, Boolean) = {
   val move: String = input.replaceAll(" ", "")
-  val putPattern: Regex = "^put([1-8])([A-H])$".r
-  val removePattern: Regex = "^remove([1-8])([A-H])$".r
+  val putPattern: Regex = "^[pP][uU][tT]([1-8])([a-hA-H])$".r
+  val removePattern: Regex = "^[rR][eE][mM][oO][vV][eE]([1-8])([a-hA-H])$".r
   val board = currState._1
 
   move match {
@@ -52,7 +56,7 @@ def eightQueensController(currState: GameState, input: String) : (GameState, Boo
   }
 }
 
-// ----------------------------------------- DRAWER -----------------------------------------
+/* ----------------------------------------------------- DRAWER ----------------------------------------------------- */
 
 def draw8QueensPiece(piece: String) = piece match{
   case "1" => s"\u2002${Console.BLACK}\u265B\u2002"
@@ -61,11 +65,12 @@ def draw8QueensPiece(piece: String) = piece match{
 }
 
 def eightQueensDrawer(currState: GameState) : Unit = {
-  println(Console.RED + "Player " + currState._2 + "'s Turn:")
+  println("\n\n\n")
   for (row <- currState._1.indices) {
     print(Console.RED + (8 - row) + " " + Console.RESET)
     for (col <- currState._1.indices) {
-      print((if ((row + col) % 2 == 0) "\u001b[48;5;172m" else "\u001b[48;5;130m") + draw8QueensPiece(currState._1(row)(col)) + "\u001b[0m")
+      print((if ((row + col) % 2 == 0) "\u001b[48;5;172m" else "\u001b[48;5;130m") + 
+        draw8QueensPiece(currState._1(row)(col)) + "\u001b[0m")
     }
     println()
   }

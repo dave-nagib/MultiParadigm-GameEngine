@@ -4,10 +4,11 @@ import javax.print.attribute.standard.Destination
 import scala.annotation.tailrec
 import scala.util.matching.Regex
 
+/* ------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------ */
+
 def piece_isBlack(piece: String): Boolean = {
   piece(0) == 'B'
 }
-
 
 def generalChecks(black: Boolean, gameState: GameState, move: ((Int, Int),(Int, Int))): Boolean = {
   val (from, to) = move
@@ -24,7 +25,9 @@ def generalChecks(black: Boolean, gameState: GameState, move: ((Int, Int),(Int, 
 
 def pawn(black: Boolean)(gameState: GameState, move: ((Int, Int),(Int, Int))): Boolean = {
   val (from, to) = move
-  (math.abs(to._1 - from._1) + math.abs(to._2 - from._2) <= 2 && math.abs(to._1 - from._1) > 0) && (!black ^ to._1 > from._1) && (math.abs(to._1 - from._1) != 2 || ((from._1 == 1  && black) || (from._1 == 6 && !black))) && (to._2 == from._2 ^ ((gameState._1(to._1)(to._2) match {
+  (math.abs(to._1 - from._1) + math.abs(to._2 - from._2) <= 2 && math.abs(to._1 - from._1) > 0) &&
+    (!black ^ to._1 > from._1) && (math.abs(to._1 - from._1) != 2 || ((from._1 == 1  && black) ||
+    (from._1 == 6 && !black))) && (to._2 == from._2 ^ ((gameState._1(to._1)(to._2) match {
     case "  " => false
     case _ => true
   }) && (black ^ piece_isBlack(gameState._1(to._1)(to._2)))))
@@ -38,8 +41,11 @@ def knight(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
 }
 
 @tailrec
-def notFoundInPath(found: String => Boolean = x => x != "  ", notFound: String => Boolean = x => false)(gameState: GameState, destination: (Int, Int), currentPos: (Int, Int)): Boolean = {
-  if(currentPos == destination || !(0 to 7 contains currentPos._1) || !(0 to 7 contains currentPos._2) || notFound(gameState._1(currentPos._1)(currentPos._2)))
+def notFoundInPath(found: String => Boolean = x => x != "  ", notFound: String => Boolean = x => false)
+                  (gameState: GameState, destination: (Int, Int), currentPos: (Int, Int))
+                  : Boolean = {
+  if(currentPos == destination || !(0 to 7 contains currentPos._1) ||
+    !(0 to 7 contains currentPos._2) || notFound(gameState._1(currentPos._1)(currentPos._2)))
     return true
   if(found(gameState._1(currentPos._1)(currentPos._2)))
     return false
@@ -64,7 +70,8 @@ def bishop(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   if (math.abs(to._1 - from._1) != math.abs(to._2 - from._2))
     return false
 
-  notFoundInPath()(gameState, to, (from._1 + (if(from._1 > to._1) -1 else 1), from._2 + (if (from._2 > to._2) -1 else 1)))
+  notFoundInPath()(gameState, to, (from._1 + (if(from._1 > to._1) -1 else 1),
+                    from._2 + (if (from._2 > to._2) -1 else 1)))
 }
 
 def rook(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
@@ -72,7 +79,8 @@ def rook(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   if (math.abs(to._1 - from._1) != 0 && math.abs(to._2 - from._2) != 0)
     return false
 
-  notFoundInPath()(gameState, to, (from._1 + (if (from._1 == to._1) 0 else if(from._1 > to._1) -1 else 1), from._2 + (if (from._2 == to._2) 0 else if (from._2 > to._2) -1 else 1)))
+  notFoundInPath()(gameState, to, (from._1 + (if (from._1 == to._1) 0 else if(from._1 > to._1) -1 else 1),
+                    from._2 + (if (from._2 == to._2) 0 else if (from._2 > to._2) -1 else 1)))
 }
 
 def blank(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
@@ -88,10 +96,15 @@ def king(black: Boolean)(gameState: GameState, move: ((Int, Int), (Int, Int))): 
   if (math.abs(to._1 - from._1) != 1 && math.abs(to._2 - from._2) != 1)
     return false
 
-  def horseCheck(row: Int, col: Int): Boolean = !((0 to 7 contains row) && (0 to 7 contains col) && gameState._1(row)(col)(1) == 'N' && (gameState._1(row)(col)(0) == 'B' ^ black))
+  def horseCheck(row: Int, col: Int): Boolean = !((0 to 7 contains row) && (0 to 7 contains col) &&
+                                                  gameState._1(row)(col)(1) == 'N' &&
+                                                  (gameState._1(row)(col)(0) == 'B' ^ black))
 
-  val safe_diagonal = notFoundInPath(x => (x(1) == 'Q' || x(1) == 'B') && (x(0) == 'B' ^ black), x => (x != "  ") && (x(0) == 'B' ^ !black))
-  val safe_polar = notFoundInPath(x => (x(1) == 'Q' || x(1) == 'R') && (x(0) == 'B' ^ black), x => (x != "  ") && (x(0) == 'B' ^ !black))
+  val safe_diagonal = notFoundInPath(x => (x(1) == 'Q' ||
+                                     x(1) == 'B') && (x(0) == 'B' ^ black), x => (x != "  ") && (x(0) == 'B' ^ !black))
+
+  val safe_polar = notFoundInPath(x => (x(1) == 'Q' || x(1) == 'R') &&
+                                  (x(0) == 'B' ^ black), x => (x != "  ") && (x(0) == 'B' ^ !black))
 
   !(!horseCheck(to._1 + 1, to._2 + 2) ||
     !horseCheck(to._1 + 1, to._2 - 2) ||
@@ -129,6 +142,8 @@ def translate_input(move: Array[String]): ((Int, Int), (Int, Int)) = {
   )
 }
 
+/* --------------------------------------------------- CONTROLLER --------------------------------------------------- */
+
 def chessController(gameState: GameState, move: String): (GameState, Boolean) = {
   val (from, to) = translate_input({
     val moves = (new Regex("[a-hA-H]\\d") findAllIn move).take(2).toArray
@@ -153,7 +168,8 @@ def chessController(gameState: GameState, move: String): (GameState, Boolean) = 
     case _ => blank
   }
 
-  if(!piece(gameState, (from, to)) || !generalChecks(piece_isBlack(gameState._1(from._1)(from._2)), gameState, (from, to)))
+  if(!piece(gameState, (from, to)) ||
+    !generalChecks(piece_isBlack(gameState._1(from._1)(from._2)), gameState, (from, to)))
     return (gameState, false)
 
   val newState: Array[Array[String]] = gameState._1.map(row => row.map(identity))
@@ -163,7 +179,7 @@ def chessController(gameState: GameState, move: String): (GameState, Boolean) = 
   ((newState, 3 - gameState._2), true)
 }
 
-// ----------------------------------------- DRAWER -----------------------------------------
+/* ----------------------------------------------------- DRAWER ----------------------------------------------------- */
 
 def drawChessPiece(piece: String) = piece match{
   case "WR" => "\u2002\u265C\u2002"
@@ -183,11 +199,13 @@ def drawChessPiece(piece: String) = piece match{
 }
 
 def chessDrawer(gameState: GameState): Unit = {
-  println(Console.GREEN + "Player " + gameState._2 + "'s Turn:")
+  println(Console.GREEN + "\n\nPlayer " + gameState._2 + "'s Turn " +
+    (if (gameState._2 == 1) "(White)" else "(Black)") + ":\n")
   for(row <- gameState._1.indices) {
     print(Console.RED + (8 - row) + " " + Console.RESET)
     for(col <- gameState._1.indices) {
-      print((if((row + col) % 2 == 0) "\u001b[48;5;172m" else "\u001b[48;5;130m") + drawChessPiece(gameState._1(row)(col)) + "\u001b[0m")
+      print((if((row + col) % 2 == 0) "\u001b[48;5;172m" else "\u001b[48;5;130m") +
+        drawChessPiece(gameState._1(row)(col)) + "\u001b[0m")
     }
     println()
   }

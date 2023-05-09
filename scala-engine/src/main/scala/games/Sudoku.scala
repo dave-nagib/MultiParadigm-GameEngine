@@ -4,33 +4,7 @@ import java.util.regex.Pattern
 import scala.annotation.tailrec
 import scala.util.matching.Regex
 
-def sudokuDrawer(gameState: GameState) = {
-  println(" \t" + s"${Console.BLACK_B}┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┓${Console.RESET}")
-  for (row <- gameState._1.indices) {
-    print(Console.GREEN + (row + 1) + "\t" + Console.RESET)
-    for (col <- gameState._1(0).indices) {
-      if(col % 3 == 0)
-        print(s"${Console.BLACK_B}┃${Console.RESET}")
-      print(s"${Console.BLACK_B}${Console.MAGENTA} ${gameState._1(row)(col)(0) match
-        case '0' => ' '
-        case x => x
-      } ${Console.RESET}")
-      if((col+1) % 3 != 0)
-        print(s"${Console.BLACK_B}│${Console.RESET}")
-    }
-    if((row + 1) % 3 != 0)
-      print(s"┃\n \t${Console.BLACK_B}┣───┼───┼───╋───┼───┼───╋───┼───┼───${Console.RESET}")
-    if ((row + 1) % 3 == 0 && (row + 1) != gameState._1.length)
-      print(s"┃\n \t${Console.BLACK_B}┣━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━${Console.RESET}")
-    println("┃")
-  }
-  println(" \t" + s"${Console.BLACK_B}┗━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┛${Console.RESET}")
-  print(" \t  " + Console.GREEN)
-  for (col <- gameState._1(0).indices) {
-    print((col + 'A').toChar + "   ")
-  }
-  println(Console.RESET)
-}
+/* ------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------ */
 
 @tailrec
 def checkVerticalExistence(gameState: GameState, value: String, col: Int, row: Int): Boolean = {
@@ -40,6 +14,8 @@ def checkVerticalExistence(gameState: GameState, value: String, col: Int, row: I
     return true
   checkVerticalExistence(gameState, value, col, row + 1)
 }
+
+/* --------------------------------------------------- CONTROLLER --------------------------------------------------- */
 
 def sudokuController(gameState: GameState, move: String) : (GameState, Boolean) = {
 
@@ -111,3 +87,32 @@ def sudokuController(gameState: GameState, move: String) : (GameState, Boolean) 
   op(gameState)
 }
 
+/* ----------------------------------------------------- DRAWER ----------------------------------------------------- */
+
+def sudokuDrawer(gameState: GameState) = {
+  println(" \t" + s"${Console.BLACK_B}┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┓${Console.RESET}")
+  for (row <- gameState._1.indices) {
+    print(Console.GREEN + (row + 1) + "\t" + Console.RESET)
+    for (col <- gameState._1(0).indices) {
+      if(col % 3 == 0)
+        print(s"${Console.BLACK_B}┃${Console.RESET}")
+      print(s"${Console.BLACK_B}${Console.MAGENTA} ${gameState._1(row)(col)(0) match
+        case '0' => ' '
+        case x => x
+      } ${Console.RESET}")
+      if((col+1) % 3 != 0)
+        print(s"${Console.BLACK_B}│${Console.RESET}")
+    }
+    if((row + 1) % 3 != 0)
+      print(s"┃\n \t${Console.BLACK_B}┣───┼───┼───╋───┼───┼───╋───┼───┼───${Console.RESET}")
+    if ((row + 1) % 3 == 0 && (row + 1) != gameState._1.length)
+      print(s"┃\n \t${Console.BLACK_B}┣━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━${Console.RESET}")
+    println("┃")
+  }
+  println(" \t" + s"${Console.BLACK_B}┗━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┛${Console.RESET}")
+  print(" \t  " + Console.GREEN)
+  for (col <- gameState._1(0).indices) {
+    print((col + 'A').toChar + "   ")
+  }
+  println(Console.RESET)
+}

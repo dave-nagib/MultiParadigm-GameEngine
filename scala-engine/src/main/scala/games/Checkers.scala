@@ -36,8 +36,7 @@ def isOpponent(gameState: GameState, x: Int, y: Int) : Boolean = {
     piece == 1 || piece == 3
 }
 
-/* ------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------ */
-
+// Mini controller to check and transfer states for consecutive jumps.
 // Assumptions: Player always owns the piece, and the initial position is always black.
 @tailrec
 def jumpsController(currState: GameState, rows: IndexedSeq[Int], cols: IndexedSeq[Int], pawn: Boolean) : (GameState, Boolean) = {
@@ -63,7 +62,7 @@ def jumpsController(currState: GameState, rows: IndexedSeq[Int], cols: IndexedSe
     // If the destination is the opposing row, transform to a King.
     if((piece == 1 && rf == 0) || (piece == 2 && rf == 7)) {
       newBoard(ri)(ci) = (piece + 2).toString
-      stillPawn = false;
+      stillPawn = false
     }
   }
   // Move the jumping piece and remove the enemy that was jumped.
@@ -74,10 +73,12 @@ def jumpsController(currState: GameState, rows: IndexedSeq[Int], cols: IndexedSe
   jumpsController((newBoard,currState._2), rows.tail, cols.tail, stillPawn)
 }
 
+/* --------------------------------------------------- CONTROLLER --------------------------------------------------- */
+
 def checkersController(currState: GameState, input: String) : (GameState, Boolean) = {
   val move = input.replaceAll(" ", "")
-  val stepPattern: Regex = "^([1-8])([A-H])([1-8])([A-H])$".r
-  val jumpsPattern: Regex = "^([1-8][A-H])([1-8][A-H])+$".r
+  val stepPattern: Regex = "^([1-8])([a-hA-H])([1-8])([a-hA-H])$".r
+  val jumpsPattern: Regex = "^([1-8][a-hA-H])([1-8][a-hA-H])+$".r
   val currPlayer = currState._2
   val currBoard = currState._1
 
@@ -104,8 +105,10 @@ def checkersController(currState: GameState, input: String) : (GameState, Boolea
       if (pawn) {
         if (!isForward(currPlayer,ri,rf))
           return (currState,false)
-        if ((currPlayer == 1 && rf == 0) || (currPlayer == 2 && rf == 7))
+        if ((currPlayer == 1 && rf == 0) || (currPlayer == 2 && rf == 7)) {
           currBoard(ri)(ci) = (currBoard(ri)(ci).toInt + 2).toString
+          println("Piece has turned to a King! This piece can now move backwards.")
+        }
       }
       currBoard(rf)(cf) = currBoard(ri)(ci)
       currBoard(ri)(rf) = "0"
@@ -133,7 +136,7 @@ def checkersController(currState: GameState, input: String) : (GameState, Boolea
   }
 }
 
-// ----------------------------------------- DRAWER -----------------------------------------
+/* ----------------------------------------------------- DRAWER ----------------------------------------------------- */
 
 def drawCheckersPiece(piece: String) = piece match{
   case "1" => " \u25CF "
@@ -145,11 +148,13 @@ def drawCheckersPiece(piece: String) = piece match{
 }
 
 def checkersDrawer(currState: GameState): Unit = {
-  println(Console.RED + "Player " + currState._2 + "'s Turn:")
+  println(Console.RED + "\n\nPlayer " + currState._2 + "'s Turn " +
+    (if (currState._2 == 1) "(White)" else "(Black)") + ":\n")
   for(row <- currState._1.indices) {
     print(Console.RED + (8 - row) + " " + Console.RESET)
     for(col <- currState._1.indices) {
-      print((if((row + col) % 2 == 0) "\u001b[48;5;172m" else "\u001b[48;5;130m") + drawCheckersPiece(currState._1(row)(col)) + "\u001b[0m")
+      print((if((row + col) % 2 == 0) "\u001b[48;5;172m" else "\u001b[48;5;130m") +
+        drawCheckersPiece(currState._1(row)(col)) + "\u001b[0m")
     }
     println()
   }
