@@ -181,9 +181,9 @@ def pieces(piece: String) = piece match{
 }
 
 def chessDrawer(gameState: GameState): Unit = {
-  println(Console.RED + "Player " + gameState._2 + "'s Turn:")
+  println(Console.GREEN + "Player " + gameState._2 + "'s Turn:")
   for(row <- gameState._1.indices) {
-    print(Console.RED + (8 - row) + "\t" + Console.RESET)
+    print(Console.GREEN + (8 - row) + "\t" + Console.RESET)
     for(col <- gameState._1.indices) {
       print((if((row + col) % 2 == 0) "\u001b[41;2m" else "\u001b[42m") + pieces(gameState._1(row)(col)) + "\u001b[0m")
     }
@@ -191,7 +191,7 @@ def chessDrawer(gameState: GameState): Unit = {
   }
   print(" \t ")
   for(col <- gameState._1.indices) {
-    print(Console.RED + ('A' + col).toChar + "   ")
+    print(Console.GREEN + ('A' + col).toChar + "   ")
   }
   println(Console.RESET)
 }

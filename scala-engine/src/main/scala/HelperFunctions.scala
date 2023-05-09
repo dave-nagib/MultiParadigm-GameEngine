@@ -56,7 +56,7 @@ def eightQueensStartGenerator() : GameState = {
   (Array.fill(8)(Array.fill(8)("0")), 1)
 }
 
-def sudokuStartGenerator(emptySquares: Int): GameState = {
+def sudokuStartGenerator(emptySquares: Int = 61): GameState = {
   val board: Array[Array[Int]] = Array.fill(9, 9)(0)
   val r: Array[mutable.Set[Int]] = Array.fill(9)(mutable.Set[Int]())
   val c: Array[mutable.Set[Int]] = Array.fill(9)(mutable.Set[Int]())
