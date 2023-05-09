@@ -183,7 +183,7 @@ def drawChessPiece(piece: String) = piece match{
 }
 
 def chessDrawer(gameState: GameState): Unit = {
-  println(Console.RED + "Player " + gameState._2 + "'s Turn:")
+  println(Console.GREEN + "Player " + gameState._2 + "'s Turn:")
   for(row <- gameState._1.indices) {
     print(Console.RED + (8 - row) + " " + Console.RESET)
     for(col <- gameState._1.indices) {

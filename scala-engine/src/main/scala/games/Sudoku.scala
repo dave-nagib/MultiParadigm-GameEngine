@@ -7,7 +7,7 @@ import scala.util.matching.Regex
 def sudokuDrawer(gameState: GameState) = {
   println(" \t" + s"${Console.BLACK_B}┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┓${Console.RESET}")
   for (row <- gameState._1.indices) {
-    print(Console.RED + (row + 1) + "\t" + Console.RESET)
+    print(Console.GREEN + (row + 1) + "\t" + Console.RESET)
     for (col <- gameState._1(0).indices) {
       if(col % 3 == 0)
         print(s"${Console.BLACK_B}┃${Console.RESET}")
@@ -25,7 +25,7 @@ def sudokuDrawer(gameState: GameState) = {
     println("┃")
   }
   println(" \t" + s"${Console.BLACK_B}┗━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┛${Console.RESET}")
-  print(" \t  " + Console.RED)
+  print(" \t  " + Console.GREEN)
   for (col <- gameState._1(0).indices) {
     print((col + 'A').toChar + "   ")
   }
