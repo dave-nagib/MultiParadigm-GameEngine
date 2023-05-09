@@ -5,9 +5,9 @@ import scala.util.matching.Regex
 
 /* ------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------ */
 
-// Checks whether a square is white using the fact that white squares' indices have the same parity.
+// Checks whether a square is white using the fact that white squares' indices have an even sum.
 def isWhite(x: Int, y: Int) : Boolean = {
-  (x % 2 == 0 && y % 2 == 0) || (x % 2 == 1 && y % 2 == 1)
+  (x+y) % 2 == 0
 }
 
 // Validates that the player has a piece at the specific location, and checks if a piece is a pawn or not.
@@ -133,6 +133,29 @@ def checkersController(currState: GameState, input: String) : (GameState, Boolea
   }
 }
 
-def checkersDrawer(currState: GameState) : Unit = {
+// ----------------------------------------- DRAWER -----------------------------------------
 
+def drawCheckersPiece(piece: String) = piece match{
+  case "1" => " \u25CF "
+  case "3" => " \u25B2 "
+  case "2" => s" ${Console.BLACK}\u25CF "
+  case "4" => s" ${Console.BLACK}\u25B2 "
+  case "0" => " \u0020 "
+  case x: String => x
+}
+
+def checkersDrawer(currState: GameState): Unit = {
+  println(Console.RED + "Player " + currState._2 + "'s Turn:")
+  for(row <- currState._1.indices) {
+    print(Console.RED + (8 - row) + " " + Console.RESET)
+    for(col <- currState._1.indices) {
+      print((if((row + col) % 2 == 0) "\u001b[48;5;172m" else "\u001b[48;5;130m") + drawCheckersPiece(currState._1(row)(col)) + "\u001b[0m")
+    }
+    println()
+  }
+  print("   ")
+  for(col <- currState._1.indices) {
+    print(Console.RED + ('A' + col).toChar + "  ")
+  }
+  println(Console.RESET)
 }

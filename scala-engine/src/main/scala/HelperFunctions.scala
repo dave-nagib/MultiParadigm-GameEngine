@@ -9,7 +9,7 @@ def getRow(number: String, boardSize: Int) : Int = {
 }
 
 def getCol(letter: String) : Int = {
-  letter.toInt - 65
+  letter.charAt(0).toInt - 65
 }
 
 def copyState(gameState: Array[Array[String]]) : Array[Array[String]] = gameState.map(row => row.map(identity))

@@ -5,10 +5,11 @@ import scala.util.matching.Regex
 
 @tailrec
 def findEmptySlot(board: Array[Array[String]], column: Int, currRow: Int) : Int = {
-  if (board(currRow+1)(column) != "0") // If the next slot down is not empty, return current row
+  // If the next slot down is not empty or the ground, return current row.
+  if (board(currRow+1)(column) != "0" || currRow == 5)
     currRow
   else
-    findEmptySlot(board, column, currRow+1) // If it is empty, recursively call on the next row
+    findEmptySlot(board, column, currRow+1) // If it is empty, recursively call on the next row.
 }
 
 def connect4Controller(currState: GameState, input: String) : (GameState, Boolean) = {
@@ -27,13 +28,26 @@ def connect4Controller(currState: GameState, input: String) : (GameState, Boolea
   ((currBoard,3-currPlayer), true)
 }
 
+// ----------------------------------------- DRAWER -----------------------------------------
 
+def drawConnect4Piece(piece: String) = piece match{
+  case "0" => s"\u2002${Console.WHITE}\u2B24\u2002"
+  case "1" => s"\u2002${Console.RED}\u2B24\u2002"
+  case "2" => s"\u2002${Console.YELLOW}\u2B24\u2002"
+  case x: String => x
+}
 
 def connect4Drawer(currState: GameState) : Unit = {
-  val board = currState._1
-  for(row <- board) {
-    for (element <- row) print(element + " ")
+  println(Console.RED + "Player " + currState._2 + "'s Turn:")
+  for (row <- currState._1.indices) {
+    for (col <- currState._1.indices) {
+      print("\u001b[48;5;18m" + drawConnect4Piece(currState._1(row)(col)) + "\u001b[0m")
+    }
     println()
   }
-  ('A' to 'G').foreach(_ => print(_))
+  print(" ")
+  for (col <- currState._1.indices) {
+    print(Console.RED + ('A' + col).toChar + "  ")
+  }
+  println(Console.RESET)
 }

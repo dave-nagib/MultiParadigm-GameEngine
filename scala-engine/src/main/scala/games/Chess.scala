@@ -163,35 +163,37 @@ def chessController(gameState: GameState, move: String): (GameState, Boolean) = 
   ((newState, 3 - gameState._2), true)
 }
 
-def pieces(piece: String) = piece match{
-  case "WR" => " \u265C "
-  case "WN" => " \u265E "
-  case "WB" => " \u265D "
-  case "WQ" => " \u265B "
-  case "WK" => " \u265A "
-  case "WP" => " \u2659 "
-  case "BR" => s" ${Console.BLACK}\u265C "
-  case "BN" => s" ${Console.BLACK}\u265E "
-  case "BB" => s" ${Console.BLACK}\u265D "
-  case "BQ" => s" ${Console.BLACK}\u265B "
-  case "BK" => s" ${Console.BLACK}\u265A "
-  case "BP" => s" ${Console.BLACK}\u2659 "
-  case "  " => s" ${Console.GREEN}\u265B "
+// ----------------------------------------- DRAWER -----------------------------------------
+
+def drawChessPiece(piece: String) = piece match{
+  case "WR" => "\u2002\u265C\u2002"
+  case "WN" => "\u2002\u265E\u2002"
+  case "WB" => "\u2002\u265D\u2002"
+  case "WQ" => "\u2002\u265B\u2002"
+  case "WK" => "\u2002\u265A\u2002"
+  case "WP" => "\u2002\u2659\u2002"
+  case "BR" => s"\u2002${Console.BLACK}\u265C\u2002"
+  case "BN" => s"\u2002${Console.BLACK}\u265E\u2002"
+  case "BB" => s"\u2002${Console.BLACK}\u265D\u2002"
+  case "BQ" => s"\u2002${Console.BLACK}\u265B\u2002"
+  case "BK" => s"\u2002${Console.BLACK}\u265A\u2002"
+  case "BP" => s"\u2002${Console.BLACK}\u2659\u2002"
+  case "  " => "\u2002\u2003\u2002"
   case x: String => x
 }
 
 def chessDrawer(gameState: GameState): Unit = {
   println(Console.RED + "Player " + gameState._2 + "'s Turn:")
   for(row <- gameState._1.indices) {
-    print(Console.RED + (8 - row) + "\t" + Console.RESET)
+    print(Console.RED + (8 - row) + " " + Console.RESET)
     for(col <- gameState._1.indices) {
-      print((if((row + col) % 2 == 0) "\u001b[41;2m" else "\u001b[42m") + pieces(gameState._1(row)(col)) + "\u001b[0m")
+      print((if((row + col) % 2 == 0) "\u001b[48;5;172m" else "\u001b[48;5;130m") + drawChessPiece(gameState._1(row)(col)) + "\u001b[0m")
     }
     println()
   }
-  print(" \t ")
+  print("   ")
   for(col <- gameState._1.indices) {
-    print(Console.RED + ('A' + col).toChar + "   ")
+    print(Console.RED + ('A' + col).toChar + "  \u2009")
   }
   println(Console.RESET)
 }

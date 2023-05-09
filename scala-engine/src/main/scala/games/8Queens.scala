@@ -22,8 +22,8 @@ def queenClearCheck(board: Array[Array[String]], row: Int, col: Int) : Boolean =
 
 def eightQueensController(currState: GameState, input: String) : (GameState, Boolean) = {
   val move: String = input.replaceAll(" ", "")
-  val putPattern: Regex = "^put([1-8])([A-B])$".r
-  val removePattern: Regex = "^remove([1-8])([A-B])$".r
+  val putPattern: Regex = "^put([1-8])([A-H])$".r
+  val removePattern: Regex = "^remove([1-8])([A-H])$".r
   val board = currState._1
 
   move match {
@@ -52,6 +52,26 @@ def eightQueensController(currState: GameState, input: String) : (GameState, Boo
   }
 }
 
-def eightQueensDrawer(currState: GameState) : Unit = {
+// ----------------------------------------- DRAWER -----------------------------------------
 
+def draw8QueensPiece(piece: String) = piece match{
+  case "1" => s"\u2002${Console.BLACK}\u265B\u2002"
+  case "0" => "\u2002\u2003\u2002"
+  case x: String => x
+}
+
+def eightQueensDrawer(currState: GameState) : Unit = {
+  println(Console.RED + "Player " + currState._2 + "'s Turn:")
+  for (row <- currState._1.indices) {
+    print(Console.RED + (8 - row) + " " + Console.RESET)
+    for (col <- currState._1.indices) {
+      print((if ((row + col) % 2 == 0) "\u001b[48;5;172m" else "\u001b[48;5;130m") + draw8QueensPiece(currState._1(row)(col)) + "\u001b[0m")
+    }
+    println()
+  }
+  print("   ")
+  for (col <- currState._1.indices) {
+    print(Console.RED + ('A' + col).toChar + "  \u2009")
+  }
+  println(Console.RESET)
 }
