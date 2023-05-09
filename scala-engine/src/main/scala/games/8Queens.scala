@@ -32,7 +32,7 @@ def eightQueensController(currState: GameState, input: String) : (GameState, Boo
 
   move match {
     case putPattern(r,c) =>
-      val (row,col) = (getRow(r,8), getCol(c))
+      val (row,col) = (getRow(r,8), getCol(c.charAt(0)))
       // If there's no queen there, and the new queen's position
       // won't compromise existing queens, accept the move.
       if (board(row)(col) == "0" && queenClearCheck(board, row, col)) {
@@ -43,7 +43,7 @@ def eightQueensController(currState: GameState, input: String) : (GameState, Boo
       (currState,false)
 
     case removePattern(r,c) =>
-      val (row,col) = (getRow(r,8), getCol(c))
+      val (row,col) = (getRow(r,8), getCol(c.charAt(0)))
       // If there is a queen in the target position, accept the move.
       if (board(row)(col) == "1") {
         board(row)(col) = "0"

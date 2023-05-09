@@ -22,7 +22,7 @@ def connect4Controller(currState: GameState, input: String) : (GameState, Boolea
   val singleDigit: Regex = "^([a-gA-G])$".r
   var column: Int = 0
   move match {
-    case singleDigit(col) => column = getCol(col)
+    case singleDigit(col) => column = getCol(col.charAt(0))
     case _ => return (currState, false)
   }
   val currBoard = currState._1

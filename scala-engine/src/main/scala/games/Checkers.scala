@@ -58,17 +58,22 @@ def jumpsController(currState: GameState, rows: IndexedSeq[Int], cols: IndexedSe
   var stillPawn = pawn // Temporary boolean to pass to the next jump.
   if (pawn) {
     // If the move is not forward, then it's invalid.
-    if (!isForward(piece,ri,rf)) return (currState,false)
+    if (!isForward(piece,ri,rf)) {
+      println("Illegal backward move!")
+      return (currState,false)
+    }
     // If the destination is the opposing row, transform to a King.
     if((piece == 1 && rf == 0) || (piece == 2 && rf == 7)) {
+      println("Piece has turned to a King! This piece can now move backwards.")
       newBoard(ri)(ci) = (piece + 2).toString
+      println(newBoard(ri)(ci))
       stillPawn = false
     }
   }
   // Move the jumping piece and remove the enemy that was jumped.
+  newBoard(rf)(cf) = newBoard(ri)(ci)
   newBoard(rMid)(cMid) = "0"
   newBoard(ri)(ci) = "0"
-  newBoard(rf)(cf) = piece.toString
   // Test the rest of the moves and return the resulting state.
   jumpsController((newBoard,currState._2), rows.tail, cols.tail, stillPawn)
 }
@@ -86,11 +91,11 @@ def checkersController(currState: GameState, input: String) : (GameState, Boolea
     // ----------------- Step move -----------------
     case stepPattern(initialRow,initialColumn,finalRow,finalColumn) =>
       val (ri,ci,rf,cf) =
-        (getRow(initialRow ,8), getCol(initialColumn),
-        getRow(finalRow, 8), getCol(finalColumn))
+        (getRow(initialRow ,8), getCol(initialColumn.charAt(0)),
+        getRow(finalRow, 8), getCol(finalColumn.charAt(0)))
       val (ownership,pawn) = playersPiece(currState,ri,ci)
       // We can include the case of a single jump in this pattern
-      if (Math.abs(ri-rf) == 3 && Math.abs(ci-cf) == 3) {
+      if (Math.abs(ri-rf) == 2 && Math.abs(ci-cf) == 2) {
         if (isWhite(ri,ci) || !ownership) return (currState,false)
         else return jumpsController(currState, IndexedSeq(ri,rf), IndexedSeq(ci,cf), pawn)
       }
@@ -103,21 +108,23 @@ def checkersController(currState: GameState, input: String) : (GameState, Boolea
       // If the moved piece is a pawn, check that the step is forwards only,
       // and if the pawn reached the last row, convert it to a king.
       if (pawn) {
-        if (!isForward(currPlayer,ri,rf))
+        if (!isForward(currPlayer,ri,rf)) {
+          println("Illegal backward move!")
           return (currState,false)
+        }
         if ((currPlayer == 1 && rf == 0) || (currPlayer == 2 && rf == 7)) {
           currBoard(ri)(ci) = (currBoard(ri)(ci).toInt + 2).toString
           println("Piece has turned to a King! This piece can now move backwards.")
         }
       }
       currBoard(rf)(cf) = currBoard(ri)(ci)
-      currBoard(ri)(rf) = "0"
+      currBoard(ri)(ci) = "0"
       ((currBoard , 3 - currPlayer) , true) // Return
 
     // ----------------- Jump series -----------------
     case jumpsPattern(_*) =>
-      val rows: IndexedSeq[Int] = move.filter(_ < 65).map(_.toInt - 48)
-      val cols: IndexedSeq[Int] = move.filter(_ > 64).map(_.toInt - 65)
+      val rows: IndexedSeq[Int] = move.filter(_ < 65).map(56 - _.toInt)
+      val cols: IndexedSeq[Int] = move.filter(_ > 64).map(getCol)
       val (ri,ci) = (rows(0),cols(0))
       val (ownership,pawn) = playersPiece(currState,ri,ci)
       if (isWhite(ri,ci) || !ownership) return (currState,false)

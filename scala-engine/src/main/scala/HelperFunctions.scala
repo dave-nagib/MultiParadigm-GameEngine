@@ -8,8 +8,8 @@ def getRow(number: String, boardSize: Int) : Int = {
   boardSize - number.toInt
 }
 
-def getCol(letter: String) : Int = {
-  val col = letter.charAt(0).toInt
+def getCol(letter: Char) : Int = {
+  val col = letter.toInt
   if (col < 97) col - 65 else col - 97
 }
 
