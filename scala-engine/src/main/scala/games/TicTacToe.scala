@@ -46,7 +46,7 @@ def ticTacToeDrawer(gameState: GameState): Unit = {
     case 2 => 'O'
     case x => x
   }'s Turn:${Console.RESET}\n")
-  print(s" \t${Console.BLACK_B}┏")
+  print(s"  ${Console.BLACK_B}┏")
   for (col <- gameState._1(0).indices){
     if((col + 1) == gameState._1(0).length)
       println(s"━━━━━┓${Console.RESET}")
@@ -54,24 +54,24 @@ def ticTacToeDrawer(gameState: GameState): Unit = {
       print("━━━━━┳")
   }
   for(row <- gameState._1.indices) {
-    print(s"${Console.GREEN}${row + 1}\t${Console.RESET}")
+    print(s"${Console.GREEN}${row + 1} ${Console.RESET}")
     for (col <- gameState._1(0).indices) {
       if(col == 0)
         print(s"${Console.BLACK_B}┃")
       if ((col + 1) == gameState._1(0).length)
         println(s"""  ${gameState._1(row)(col) match
-          case " " => s"${Console.GREEN}?${Console.RESET}${Console.BLACK_B}"//(row * gameState._1(0).length + col + 1)
+          case " " => s"${Console.GREEN} ${Console.RESET}${Console.BLACK_B}"//(row * gameState._1(0).length + col + 1)
           case x => x
         }  ┃${Console.RESET}""")
       else
         print(s"""  ${
           gameState._1(row)(col) match
-            case " " => s"${Console.GREEN}?${Console.RESET}${Console.BLACK_B}"//(row * gameState._1(0).length + col + 1)
+            case " " => s"${Console.GREEN} ${Console.RESET}${Console.BLACK_B}"//(row * gameState._1(0).length + col + 1)
             case x => x
         }  ┃""")
     }
     if(row + 1 == gameState._1.length)
-      print(s" \t${Console.BLACK_B}┗")
+      print(s"  ${Console.BLACK_B}┗")
       for (col <- gameState._1(0).indices) {
         if ((col + 1) == gameState._1(0).length)
           println(s"━━━━━┛${Console.RESET}")
@@ -81,14 +81,14 @@ def ticTacToeDrawer(gameState: GameState): Unit = {
     else
       for (col <- gameState._1(0).indices) {
         if(col == 0)
-          print(s" \t${Console.BLACK_B}┣")
+          print(s"  ${Console.BLACK_B}┣")
         if ((col + 1) == gameState._1(0).length)
           println(s"━━━━━┫${Console.RESET}")
         else
           print("━━━━━╋")
       }
   }
-  print(" \t   " + Console.GREEN)
+  print("     " + Console.GREEN)
   for (col <- gameState._1(0).indices){
     print((col + 'A').toChar + "     ")
   }

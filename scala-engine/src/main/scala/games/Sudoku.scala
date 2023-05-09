@@ -90,12 +90,15 @@ def sudokuController(gameState: GameState, move: String) : (GameState, Boolean) 
 /* ----------------------------------------------------- DRAWER ----------------------------------------------------- */
 
 def sudokuDrawer(gameState: GameState) = {
-  println(" \t" + s"${Console.BLACK_B}┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┓${Console.RESET}")
+  val border: String = s"${Console.BLACK_B}\u001b[38;5;54m┃"
+  val tJoint: String = s"\u001b[38;5;54m╋${Console.RESET}${Console.BLACK_B}"
+  val sideJoint: String = s"\u001b[38;5;54m┣${Console.RESET}${Console.BLACK_B}"
+  println("  " + s"${Console.BLACK_B}\u001b[38;5;54m┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┓${Console.RESET}")
   for (row <- gameState._1.indices) {
-    print(Console.GREEN + (row + 1) + "\t" + Console.RESET)
+    print(Console.GREEN + (row + 1) + " " + Console.RESET)
     for (col <- gameState._1(0).indices) {
       if(col % 3 == 0)
-        print(s"${Console.BLACK_B}┃${Console.RESET}")
+        print(s"${border}${Console.RESET}")
       print(s"${Console.BLACK_B}${Console.MAGENTA} ${gameState._1(row)(col)(0) match
         case '0' => ' '
         case x => x
@@ -104,13 +107,15 @@ def sudokuDrawer(gameState: GameState) = {
         print(s"${Console.BLACK_B}│${Console.RESET}")
     }
     if((row + 1) % 3 != 0)
-      print(s"┃\n \t${Console.BLACK_B}┣───┼───┼───╋───┼───┼───╋───┼───┼───${Console.RESET}")
+      print(s"${border}${Console.RESET}" +
+        s"\n  ${Console.BLACK_B}${sideJoint}───┼───┼───${tJoint}───┼───┼───${tJoint}───┼───┼───")
     if ((row + 1) % 3 == 0 && (row + 1) != gameState._1.length)
-      print(s"┃\n \t${Console.BLACK_B}┣━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━${Console.RESET}")
-    println("┃")
+      print(s"${border}${Console.RESET}" +
+        s"\n  ${Console.BLACK_B}\u001b[38;5;54m┣━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━")
+    println(s"${Console.BLACK_B}\u001b[38;5;54m┃${Console.RESET}")
   }
-  println(" \t" + s"${Console.BLACK_B}┗━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┛${Console.RESET}")
-  print(" \t  " + Console.GREEN)
+  println("  " + s"${Console.BLACK_B}\u001b[38;5;54m┗━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┛${Console.RESET}")
+  print("    " + Console.GREEN)
   for (col <- gameState._1(0).indices) {
     print((col + 'A').toChar + "   ")
   }
