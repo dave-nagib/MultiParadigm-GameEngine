@@ -35,7 +35,7 @@ def pawn(black: Boolean)(gameState: GameState, move: ((Int, Int),(Int, Int))): B
 
 def knight(gameState: GameState, move: ((Int, Int), (Int, Int))): Boolean = {
   val (from, to) = move
-  if (math.abs(to._1 - from._1) + math.abs(to._2 - from._2) != 3 || math.abs(to._1 - from._1) == 0)
+  if (math.abs(to._1 - from._1) + math.abs(to._2 - from._2) != 3 || !((math.abs(to._1 - from._1) == 1) ^ (math.abs(to._2 - from._2) == 1)))
     return false
   true
 }
