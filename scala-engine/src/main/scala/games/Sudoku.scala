@@ -3,6 +3,7 @@ package games
 import java.util.regex.Pattern
 import scala.annotation.tailrec
 import scala.util.matching.Regex
+import org.jpl7.*
 
 /* ------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------ */
 
@@ -15,12 +16,20 @@ def checkVerticalExistence(gameState: GameState, value: String, col: Int, row: I
   checkVerticalExistence(gameState, value, col, row + 1)
 }
 
+@tailrec
+def applySolution(gameState: Array[Array[String]], solution: Array[Array[Int]], row: Int, col: Int): Unit = {
+  if(gameState(row)(col) == " ")
+    gameState(row)(col) = solution(row)(col).toString
+  if (row + col == 16)
+    return ()
+  applySolution(gameState, solution, (row + (col / 8)) % 9, (col + 1) % 9)
+}
 /* --------------------------------------------------- CONTROLLER --------------------------------------------------- */
 
 def sudokuController(gameState: GameState, move: String) : (GameState, Boolean) = {
 
   val position = """(?i)(\b(?:\d[a-h])|(?:[a-h]\d)\b)(?-i)""".r.unanchored
-  val operation = """(?i)(del|\b\d\b)(?-i)""".r.unanchored
+  val operation = """(?i)(del|\b\d\b|solve)(?-i)""".r.unanchored
 
   def delete(pos: Array[Int])(gameState: GameState): (GameState, Boolean) = {
     if (gameState._1(pos(0))(pos(1)).length == 1) {
@@ -56,6 +65,11 @@ def sudokuController(gameState: GameState, move: String) : (GameState, Boolean) 
     ((newState, gameState._2), true)
   }
 
+  move match
+    case operation(first) => first.toLowerCase() match
+      case "solve" => return sudokuSolve(gameState)
+      case _ => ()
+
   val pos =  (move match
     case position(first) => first
     case _ => return (gameState, false)
@@ -80,6 +94,7 @@ def sudokuController(gameState: GameState, move: String) : (GameState, Boolean) 
     move match
     case operation(first) => first.toLowerCase() match
       case "del" => delete(pos)
+      case "solve" => sudokuSolve
       case value: String if 0 to 9 contains value.toInt => insert(pos, value)
     case _ => return (gameState, false)
     )
@@ -120,4 +135,34 @@ def sudokuDrawer(gameState: GameState) = {
     print((col + 'A').toChar + "   ")
   }
   println(Console.RESET)
+}
+
+def sudokuSolve(gameState: GameState): (GameState, Boolean) = {
+  val boardToString: Array[Array[String]] = Array.fill(9, 9)("_")
+
+  for(i <- 0 to 8)
+    for(j <- 0 to 8)
+      if(gameState._1(i)(j) != " ")
+        boardToString(i)(j) = gameState._1(i)(j)(0).toString
+
+  val boardTS = boardToString.map(row => "[" + row.mkString(", ") + "]").mkString(", ")
+  val finalString = "[" + boardTS + "]"
+
+  val q1 = new Query("consult('src/main/prolog/SudokuSolver.pl')")
+
+  q1.hasSolution
+
+  val q = Query("Rows = " + finalString + ", sudoku(Rows), maplist(label,Rows).")
+
+  if(!q.hasSolution)
+    return (gameState, false)
+  val result = q.oneSolution().toString
+
+  val rowsString = result.replaceAll("Rows=|\\{|\\}", "").stripPrefix("[[").stripSuffix("]]")
+  val rows = rowsString.split("\\], \\[")
+  val arrayElements = rows.map(array => array.split(", "))
+  val solvedSudoku = arrayElements.map(_.map(_.toInt))
+  val newState = copyState(gameState._1)
+  applySolution(newState, solvedSudoku, 0, 0)
+  ((newState, gameState._2 + 1), true)
 }

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Scala-Engine.iml" filepath="$PROJECT_DIR$/.idea/modules/Scala-Engine.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Scala-Engine-build.iml" filepath="$PROJECT_DIR$/.idea/modules/Scala-Engine-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/project.Scala-Engine-build.iml" filepath="$PROJECT_DIR$/.idea/modules/project.Scala-Engine-build.iml" />
     </modules>
   </component>
 </project>

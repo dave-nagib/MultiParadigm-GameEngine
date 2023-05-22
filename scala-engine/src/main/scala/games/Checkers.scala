@@ -66,7 +66,6 @@ def jumpsController(currState: GameState, rows: IndexedSeq[Int], cols: IndexedSe
     if((piece == 1 && rf == 0) || (piece == 2 && rf == 7)) {
       println("Piece has turned to a King! This piece can now move backwards.")
       newBoard(ri)(ci) = (piece + 2).toString
-      println(newBoard(ri)(ci))
       stillPawn = false
     }
   }
