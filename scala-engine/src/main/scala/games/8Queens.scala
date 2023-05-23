@@ -1,5 +1,8 @@
 package org.gengine
 package games
+import org.jpl7.*
+
+import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 /* ------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------ */
@@ -28,6 +31,7 @@ def eightQueensController(currState: GameState, input: String) : (GameState, Boo
   val move: String = input.replaceAll(" ", "")
   val putPattern: Regex = "^[pP][uU][tT]([1-8])([a-hA-H])$".r
   val removePattern: Regex = "^[rR][eE][mM][oO][vV][eE]([1-8])([a-hA-H])$".r
+  val solvePattern: Regex = "^[sS][oO][lL][vV][eE]$".r
   val board = currState._1
 
   move match {
@@ -51,6 +55,17 @@ def eightQueensController(currState: GameState, input: String) : (GameState, Boo
       }
       // Otherwise, reject the move.
       (currState,false)
+
+    case solvePattern(_*) =>
+      val(solvedState, solvable) = eightQueensSolve(currState)
+      if(solvable){
+        println("Solution found!")
+        (solvedState,true)
+      }else{
+        println("The queens currently placed make it impossible to solve the puzzle!" +
+          "\nTry to remove or replace some pieces.")
+        (currState,true)
+      }
 
     case _ => (currState, false)
   }
@@ -79,4 +94,52 @@ def eightQueensDrawer(currState: GameState) : Unit = {
     print(Console.RED + ('A' + col).toChar + "  \u2009")
   }
   println(Console.RESET)
+}
+
+/* ----------------------------------------------------- SOLVER ----------------------------------------------------- */
+
+def eightQueensSolve(gameState: GameState): (GameState, Boolean) = {
+  val q1 = new Query("consult('src/main/prolog/8queens.pl')") // Link to Prolog file
+  if(!q1.hasSolution) { // Check that the Prolog file works
+    println("Problem with prolog file, cannot consult.")
+    return (gameState, false)
+  }
+  // Construct input string to Prolog.
+  val PlInput: String = getPlState(0, gameState._1)
+  val q2 = new Query("queens( Q ),labeling( [ff],Q ),Q=["+PlInput+"].")
+  if(q2.hasSolution) { // If there is a solution, get it and parse it to a game state and return it with true.
+    val queenPositions = q2.oneSolution().get("Q").toString.replaceAll("[\\[\\]]", "").split(", ").map(_.toInt)
+    val solvedBoard = eightQueensStartGenerator()._1
+    placeQueens(0, queenPositions, solvedBoard)
+    ((solvedBoard,0),true)
+  }else{ // If there is no solution, return the same state with false.
+    (gameState,false)
+  }
+}
+
+// Applies solution to an empty board
+@tailrec
+def placeQueens(col: Int, positions: Array[Int], board: Array[Array[String]]) : Unit = {
+  if (col == 8) {return}
+  board(8-positions(col))(col) = "1"
+  placeQueens(col+1, positions, board)
+}
+
+// Construct input from a board.
+def getPlState(currCol: Int, board: Array[Array[String]]) : String = {
+  if(currCol == 7)
+    getColQueen(0, currCol, board)
+  else
+    getColQueen(0, currCol, board) ++ "," ++ getPlState(currCol+1, board)
+}
+
+// In a single column, if there is a queen, get the index of the row it is in,
+// and if there isn't any queens, return _
+@tailrec
+def getColQueen(currRow: Int, col: Int, board: Array[Array[String]]) : String = {
+  if(currRow == 8) return "_"
+  if(board(currRow)(col) == "1")
+    (8-currRow).toString
+  else
+    getColQueen(currRow+1, col, board)
 }

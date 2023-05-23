@@ -3,7 +3,7 @@ package games
 import java.util.regex.Pattern
 import scala.annotation.tailrec
 import scala.util.matching.Regex
-import org.jpl7.*
+import org.jpl7._
 
 /* ------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------ */
 
@@ -104,7 +104,7 @@ def sudokuController(gameState: GameState, move: String) : (GameState, Boolean) 
 
 /* ----------------------------------------------------- DRAWER ----------------------------------------------------- */
 
-def sudokuDrawer(gameState: GameState) = {
+def sudokuDrawer(gameState: GameState): Unit = {
   val border: String = s"${Console.BLACK_B}\u001b[38;5;54m┃"
   val tJoint: String = s"\u001b[38;5;54m╋${Console.RESET}${Console.BLACK_B}"
   val sideJoint: String = s"\u001b[38;5;54m┣${Console.RESET}${Console.BLACK_B}"
@@ -136,6 +136,8 @@ def sudokuDrawer(gameState: GameState) = {
   }
   println(Console.RESET)
 }
+
+/* ----------------------------------------------------- SOLVER ----------------------------------------------------- */
 
 def sudokuSolve(gameState: GameState): (GameState, Boolean) = {
   val boardToString: Array[Array[String]] = Array.fill(9, 9)("_")
